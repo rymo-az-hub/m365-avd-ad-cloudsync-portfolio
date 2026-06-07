@@ -1,40 +1,34 @@
-# Runbook: AVD Troubleshooting Notes
+# Runbook: AVD Troubleshooting
 
-## Common checks
+## 目的
 
-| Area | Check |
+AVD接続、Session Host状態、ユーザーセッション、Intune状態の一次切り分けを行います。
+
+## 主な確認観点
+
+| 観点 | 確認内容 |
 |---|---|
-| Assignment | User/group assigned to Desktop Application Group |
-| RBAC | VM User Login or equivalent access for Entra joined VM sign-in |
-| Session host | Host registration, status, agent health |
-| VM state | Running or Start VM on Connect capable |
-| Intune | Device enrollment and compliance status |
-| Network | Required outbound access for AVD agent and Microsoft services |
-| Identity | User sign-in status and Conditional Access results |
+| Host Pool | Session Hostが登録されているか |
+| Session Host | Available / Unavailable / Needs Assistanceなどの状態 |
+| User Session | 接続中ユーザー、セッション数 |
+| Assignment | ユーザーがDesktop Application Groupに割り当てられているか |
+| RBAC | VM User Login等の権限が不足していないか |
+| Intune | デバイス登録、準拠状態、ポリシー適用 |
+| Sign-in logs | Conditional Access、MFA、認証失敗理由 |
 
-## Session host and user sessions
+## CLI / RESTの注意
 
-If Azure CLI AVD subcommands are unavailable or inconsistent, use Azure PowerShell or ARM REST API for session host and user session checks.
+Azure CLIのDesktop Virtualizationサブコマンドは環境によって利用できる範囲が異なる場合があります。このラボでは、AVD Session Host / User Session確認にARM REST APIを利用するパターンも用意しています。
 
-Recommended Azure PowerShell cmdlets:
+公開用スクリプト:
 
-```powershell
-Get-AzWvdSessionHost
-Get-AzWvdUserSession
-```
+- `scripts/avd/check-avd-sessions-rest.ps1`
 
-ARM REST pattern is documented in [Runbook_Lab_Cost_Stop.md](Runbook_Lab_Cost_Stop.md).
+## よくある切り分け
 
-## Troubleshooting principle
-
-Separate the issue into these layers:
-
-1. User assignment / entitlement
-2. Identity and Conditional Access
-3. AVD control plane
-4. Session host registration
-5. VM power state
-6. Network access
-7. Intune compliance / policy impact
-
-Avoid treating all connection failures as AVD host issues.
+| 事象 | 確認 |
+|---|---|
+| Workspaceにデスクトップが出ない | DAG割り当て、ユーザーグループ、アプリグループ |
+| 接続できない | RBAC、CA/MFA、Session Host状態、RDPプロパティ |
+| Session HostがAvailableにならない | AVD Agent、ネットワーク、VM状態、Intune状態 |
+| Start VM on Connectが動かない | Host Pool設定、AVD service principalのRBAC、VM power state |

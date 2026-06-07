@@ -1,34 +1,41 @@
-# P7 Cloud Sync Provisioning Evidence Summary
+# P7 Cloud Sync Provisioning証跡サマリー
 
-## Result
+## 結果
 
-Cloud Sync successfully synchronized the selected AD DS lab user to Microsoft Entra ID.
+AD DSラボドメイン上の選定ユーザーを、Microsoft Entra Cloud SyncでMicrosoft Entra IDへ同期できました。
 
-## Public validation summary
+## 公開用検証結果
 
-| Item | Public result |
+| 項目 | 結果 |
 |---|---|
 | Source | AD DS lab domain |
 | Target | Microsoft Entra ID |
 | Sync direction | AD DS to Microsoft Entra ID |
 | Scope type | Selected security group |
 | Scope group | `GG-CloudSync-Users` |
-| On-demand provisioning | Success |
-| Normal sync | Success |
-| Provisioning action | Create confirmed |
+| On-demand provisioning | 成功 |
+| Normal sync | 成功 |
+| Provisioning action | Create確認 |
 | Synced lab-domain user count | 1 |
-| Synced target | `<SYNCED-USER-UPN>` |
+| Synced target | `<SYNCED_USER_UPN>` |
 | `onPremisesSyncEnabled` | `true` |
 
-## Troubleshooting evidence summary
+## Scope証跡の考え方
 
-| Issue | Resolution |
+On-demand provisioningは、選択した1ユーザーで同期構成を確認するために利用しました。ただし、On-demand provisioningは通常同期Scopeの唯一の証跡としては扱っていません。
+
+最終判断は、通常同期、Provisioning logs、Microsoft Graphでの同期属性確認を組み合わせて行いました。
+
+## トラブルシュート要約
+
+| 事象 | 対応 |
 |---|---|
-| Domain dropdown empty in Cloud Sync configuration screen | Portal sign-out/sign-in refreshed the blade and the domain became selectable. |
-| On-demand import ResourceNotFound | The entered DN used an incorrect CN. The exact AD DistinguishedName was retrieved and used successfully. |
+| Cloud Sync構成画面でドメインが表示されない | Portalサインアウト/サインインで表示が回復。 |
+| On-demand import ResourceNotFound | 入力DNのCNが誤っていたため、AD DSから正確なDistinguishedNameを取得して再実行。 |
 
-## Notes
+## 非公開原本
 
-- On-demand provisioning was not treated as the only scope evidence.
-- Normal provisioning logs and Graph verification were used to support the final result.
-- Raw provisioning logs and screenshots are excluded from the public repository.
+- Provisioning logs原本
+- Graph JSON原本
+- Portalスクリーンショット
+- UPN / Object ID / Request ID / Tenant IDを含むログ

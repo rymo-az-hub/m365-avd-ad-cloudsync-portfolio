@@ -1,33 +1,42 @@
-# P6 Completion Summary: Azure Virtual Desktop Modern Configuration
+# P6 AVD完了サマリー
 
-## Result
+## 結果
 
-P6 validated a Microsoft Entra joined Azure Virtual Desktop session host with Intune enrollment, compliance confirmation, user access, Start VM on Connect, and deallocate operation.
+Azure Virtual DesktopのModern構成を検証し、Microsoft Entra joined session host、Intune登録、準拠確認、ユーザー接続、Start VM on Connect、deallocate運用まで確認しました。
 
-## Completed scope
+## 検証範囲
 
-| Item | Result |
+| 項目 | 結果 |
 |---|---|
-| Host pool | Created |
-| Workspace | Created |
-| Desktop Application Group | Created and assigned |
-| Session host | Microsoft Entra joined |
-| Intune enrollment | Enabled and confirmed |
-| Compliance status | Confirmed |
-| User connection | Successful |
-| Start VM on Connect | Enabled and validated |
-| VM deallocate operation | Validated |
+| Host Pool | 作成済み |
+| Workspace | 作成済み |
+| Desktop Application Group | 作成・割り当て済み |
+| Session Host | Microsoft Entra joined |
+| Intune enrollment | 確認済み |
+| Compliance | 確認済み |
+| User connection | 成功 |
+| Sessions count | 確認済み |
+| Start VM on Connect | 有効化・検証済み |
+| VM deallocate | 検証済み |
 
-## Design intent
+## 設計意図
 
-The AVD design intentionally uses a modern Microsoft Entra joined session host pattern. The lab emphasizes a cloud-first desktop platform rather than a classic AD domain joined AVD pattern.
+| 判断 | 意図 |
+|---|---|
+| Microsoft Entra joined AVD | オンプレミスAD DS前提に寄せず、クラウド中心のAVD構成を示すため。 |
+| Intune管理 | Session Hostを端末管理・準拠評価の対象として扱うため。 |
+| Start VM on Connect | ラボのコスト最適化と、ユーザー接続時の起動運用を検証するため。 |
+| Runbook化 | 接続、停止、トラブルシュートを作業ログではなく運用手順として残すため。 |
 
-## Operational notes
+## 実務との差分
 
-- User assignment, VM User Login role assignment, RDP property validation, and AVD session checks were included in the runbook flow.
-- Start VM on Connect was treated as both a user-experience and cost-control feature.
-- VM deallocate was validated as a lab cost-stop operation.
+| 領域 | ラボ | 実務での考慮 |
+|---|---|---|
+| Session Host | 単一ホスト中心 | 複数Session Host、スケーリング、可用性、監視を設計する。 |
+| Start VM on Connect | 有効化・動作確認 | Azure Virtual Desktop service principalへのDesktop Virtualization Power On Contributor割り当てなどRBAC前提を明記する。 |
+| Profile | この公開版では対象外 | FSLogix、ストレージ、バックアップ、容量管理が必要。 |
+| Monitoring | 手動確認 | Log Analytics、アラート、診断設定を設計する。 |
 
-## Public evidence summary
+## 公開証跡
 
-See [evidence/public/p6-avd-validation-summary.md](../../evidence/public/p6-avd-validation-summary.md).
+- [P6 AVD validation evidence summary](../../evidence/public/p6-avd-validation-summary.md)

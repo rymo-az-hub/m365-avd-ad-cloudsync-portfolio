@@ -1,25 +1,29 @@
-# P6 AVD Validation Evidence Summary
+# P6 AVD検証証跡サマリー
 
-## Result
+## 結果
 
-AVD Modern configuration was validated successfully.
+Azure Virtual Desktop Modern構成の検証は成功しました。
 
-## Public validation summary
+## 公開用検証結果
 
-| Item | Public result |
+| 項目 | 結果 |
 |---|---|
-| Host pool | Created |
-| Workspace | Created |
-| Desktop Application Group | Created and assigned |
-| Session host join type | Microsoft Entra joined |
-| Intune enrollment | Confirmed |
-| Compliance | Confirmed |
-| User connection | Successful |
-| Session count validation | Successful |
-| Start VM on Connect | Enabled and validated |
-| VM deallocate | Validated |
+| Host Pool | 作成済み |
+| Workspace | 作成済み |
+| Desktop Application Group | 作成・割り当て済み |
+| Session Host join type | Microsoft Entra joined |
+| Intune enrollment | 確認済み |
+| Compliance | 確認済み |
+| User connection | 成功 |
+| Session count validation | 成功 |
+| Start VM on Connect | 有効化・検証済み |
+| VM deallocate | 検証済み |
 
-## Notes
+## 非公開原本
 
-- Raw screenshots are not included in the public repository.
-- Private evidence includes portal screenshots and command outputs with identifiers removed from the public version.
+- Portalスクリーンショット原本
+- AVD接続確認の生ログ
+- Intuneデバイス画面
+- Azure VM状態出力
+
+公開版では、上記原本を掲載せず、判定結果のみを要約しています。

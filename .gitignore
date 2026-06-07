@@ -1,45 +1,76 @@
 # Private evidence and raw exports
+# Public repository must not contain raw portal screenshots, Graph exports, sign-in exports, provisioning logs, or local transcripts.
 evidence/private/
 evidence/raw/
 evidence/_selected/
 private-evidence/
 raw-evidence/
+exports/
+logs/
+transcripts/
 
-# Screenshots and images are excluded from this public repo
+# Raw evidence and export files under evidence
+# Public evidence must be Markdown summaries only.
+evidence/**/*.csv
+evidence/**/*.json
+evidence/**/*.log
+evidence/**/*.har
+evidence/**/*.txt
+
+# Screenshots and images are excluded from this public repository.
 *.png
 *.jpg
 *.jpeg
 *.webp
 *.bmp
 *.gif
+*.tiff
+*.svg
 
-# Raw logs / exports
+# Raw logs / exports outside evidence
 *.log
 *.har
-*signin*.csv
-*signIn*.csv
-*provisioning*.csv
-*graph*.json
+*.etl
+*.evtx
+*.csv
+*.tsv
 *raw*.json
+*graph*.json
+*signin*.json
+*signin*.csv
+*signIn*.json
+*signIn*.csv
+*provisioning*.json
+*provisioning*.csv
 
-# Secrets / tokens
+# Secrets / tokens / local configuration
 *.env
 *.token
 *.secret
 *.key
 *.pem
+*.pfx
+*.cer
+*.crt
+*.kubeconfig
 
-# Office binary deliverables are kept private in this repo version
+# Office binary deliverables are kept private in this repository version.
 *.xlsx
 *.xlsm
+*.xls
 *.docx
 *.pptx
 ~$*.xlsx
 ~$*.docx
 ~$*.pptx
 
-# Local temp
+# Local temp / OS files
 *.tmp
 *.bak
+*.swp
 .DS_Store
 Thumbs.db
+
+# Tool / editor local folders
+.vscode/settings.json
+.idea/

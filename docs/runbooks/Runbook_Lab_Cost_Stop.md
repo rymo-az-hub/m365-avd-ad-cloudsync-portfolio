@@ -1,98 +1,48 @@
-# Runbook: Lab Cost Stop / VM Deallocate
+# Runbook: Lab Cost Stop
 
-## 1. Purpose
+## 目的
 
-Safely stop compute cost after lab validation by confirming there are no active AVD sessions and then deallocating the lab DC VM and AVD session host.
+個人ラボの検証後に、AVD Session Host VMとAD DS / DNS VMをdeallocateし、Computeコストを停止します。
 
-This is a lab-only cost-control procedure. Do not apply this directly to production domain controllers.
+> **LAB ONLY:** この手順は個人ラボのコスト停止用です。本番DC、ID基盤、AVD環境に対して、影響評価・変更承認・復旧計画なしに適用しないでください。
 
-## 2. Target resources
+## 停止前確認
 
-| VM | Purpose |
+| 確認項目 | 期待値 |
 |---|---|
-| `<DC-VM-NAME>` | AD DS / DNS / Cloud Sync Agent |
-| `<AVD-SESSION-HOST-VM>` | AVD Session Host |
+| 実行端末 | 停止対象AVD Session Hostではない |
+| AVD Session Host sessions | 0 |
+| AVD User Sessions | 0 |
+| 停止対象VM | DC VM、AVD VMのみ |
+| 証跡 | 停止前のPower stateとセッション状態を記録 |
 
-## 3. Pre-stop checks
+## 停止手順
 
-| Check | Expected result |
-|---|---|
-| Current execution host | Not the AVD session host being stopped |
-| AVD session host sessions | 0 |
-| AVD user sessions | 0 |
-| DC VM state | Running before stop |
-| AVD VM state | Running before stop |
+1. AVD Session Hostのsessions数を確認する。
+2. User Sessionが残っていないことを確認する。
+3. DC VMとAVD VMのPower stateを確認する。
+4. 対象VMをdeallocateする。
+5. `VM deallocated`になったことを確認する。
 
-## 4. AVD session host check through ARM REST
+## 停止中の想定状態
 
-Azure CLI AVD subcommands can differ by extension/version. ARM REST is used here to make the check explicit.
+Cloud Sync AgentをこのラボではDCに同居させています。そのため、DC VMをdeallocateするとAgentをホストするサーバー自体が停止し、Microsoft Entra管理センター上でAgentがInactiveまたは未接続に見える可能性があります。これはラボ停止中の想定動作です。
 
-```powershell
-$RgName     = "<RESOURCE-GROUP>"
-$HostPool   = "<AVD-HOST-POOL>"
-$ApiVersion = "2024-04-03"
-$SubId      = az account show --query id -o tsv
+## 再開後確認
 
-$SessionHostsUri = "https://management.azure.com/subscriptions/$SubId/resourceGroups/$RgName/providers/Microsoft.DesktopVirtualization/hostPools/$HostPool/sessionHosts?api-version=$ApiVersion"
-$SessionHostsResp = az rest --method GET --url $SessionHostsUri | ConvertFrom-Json
+| 順番 | 確認項目 | 期待値 |
+|---:|---|---|
+| 1 | DC VM起動 | Running |
+| 2 | AD DSサービス | ADWS / DNS / NTDS / KDC / NetlogonがRunning |
+| 3 | DNS名前解決 | ラボドメイン名を解決できる |
+| 4 | Cloud Sync Agent | Activeに戻る |
+| 5 | Cloud Sync configuration | Healthy / Normal |
+| 6 | AVD VM起動 | Running |
+| 7 | AVD Session Host | Available |
+| 8 | サインイン試験 | 必要に応じてクラウドサインインを確認 |
 
-$SessionHostsResp.value |
-  Select-Object name,
-    @{Name='sessions';Expression={$_.properties.sessions}},
-    @{Name='status';Expression={$_.properties.status}},
-    @{Name='allowNewSession';Expression={$_.properties.allowNewSession}}
-```
+## 実務での注意
 
-Expected result:
-
-```text
-sessions: 0
-```
-
-## 5. Deallocate lab VMs
-
-```powershell
-$RgName = "<RESOURCE-GROUP>"
-$TargetVmNames = @("<DC-VM-NAME>", "<AVD-SESSION-HOST-VM>")
-
-foreach ($VmName in $TargetVmNames) {
-  az vm deallocate --resource-group $RgName --name $VmName
-}
-```
-
-## 6. Post-stop check
-
-```powershell
-foreach ($VmName in $TargetVmNames) {
-  az vm get-instance-view `
-    --resource-group $RgName `
-    --name $VmName `
-    --query "{name:name, powerState:instanceView.statuses[?starts_with(code, 'PowerState/')].displayStatus | [0]}" `
-    -o json
-}
-```
-
-Expected result:
-
-```text
-<DC-VM-NAME>: VM deallocated
-<AVD-SESSION-HOST-VM>: VM deallocated
-```
-
-## 7. Restart / recovery checks
-
-When resuming the lab:
-
-1. Start the DC VM first.
-2. Confirm AD DS / DNS services are running.
-3. Confirm Cloud Sync Agent service is running.
-4. Confirm Cloud Sync configuration returns to healthy state.
-5. Start the AVD session host.
-6. Confirm AVD session host status becomes available.
-7. Validate sign-in and sync only after identity services are healthy.
-
-## 8. Notes
-
-- Cloud Sync Agent may appear inactive while the DC VM is deallocated. This is expected for the lab.
-- Deallocate stops compute cost but does not remove managed disks, NICs, or other persistent resources.
-- Production DC shutdown/deallocation requires explicit impact review, maintenance window, backup, monitoring, and recovery planning.
+- 本番DCのdeallocateは原則として安易に実施しません。
+- 全DC停止、復旧順序、SYSVOL/DFSR、時刻同期、DNS、RID、バックアップなどを考慮する必要があります。
+- 本番AVD停止では、ユーザー通知、drain、変更承認、復旧確認を行います。

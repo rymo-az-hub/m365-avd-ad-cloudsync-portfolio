@@ -1,25 +1,31 @@
-# P7 Cost Stop Evidence Summary
+# P7 Cost Stop証跡サマリー
 
-## Result
+## 結果
 
-After validation, the lab DC VM and AVD session host VM were deallocated successfully.
+検証後、ラボ用DC VMとAVD Session Host VMをdeallocateしました。
 
-## Public validation summary
+## 公開用検証結果
 
-| Item | Public result |
+| 項目 | 結果 |
 |---|---|
-| Execution host | Management workstation, not the AVD session host |
-| AVD session host status before stop | Available |
+| 実行端末 | 管理端末。停止対象AVD Session Hostではない。 |
+| AVD Session Host状態 | 停止前にAvailableを確認 |
 | AVD active sessions | 0 |
 | AVD user sessions | 0 |
-| DC VM before stop | Running |
-| AVD VM before stop | Running |
-| DC VM deallocate | Success |
-| AVD VM deallocate | Success |
-| DC VM after stop | VM deallocated |
-| AVD VM after stop | VM deallocated |
+| DC VM停止前 | Running |
+| AVD VM停止前 | Running |
+| DC VM deallocate | 成功 |
+| AVD VM deallocate | 成功 |
+| DC VM停止後 | VM deallocated |
+| AVD VM停止後 | VM deallocated |
 
-## Notes
+## 注意
 
-- Cloud Sync Agent may appear inactive while the DC VM is deallocated. This is expected for the lab cost-stop state.
-- Deallocate stops compute cost but does not delete managed disks, NICs, or other persistent resources.
+このラボではCloud Sync AgentをDCに同居させています。そのため、DC VMをdeallocateすると、Agentをホストするサーバー自体が停止し、Microsoft Entra管理センター上でAgentがInactiveまたは未接続に見える可能性があります。これはラボ停止中の想定動作です。
+
+## 非公開原本
+
+- VM power state出力
+- AVD Session Host / User Session確認出力
+- Portalスクリーンショット
+- Resource group名やVM名を含む操作ログ

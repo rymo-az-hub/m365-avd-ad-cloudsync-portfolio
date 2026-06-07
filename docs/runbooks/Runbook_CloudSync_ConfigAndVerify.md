@@ -1,132 +1,67 @@
-# Runbook: Cloud Sync Configuration and Verification
+# Runbook: Cloud Sync構成・同期確認
 
-## 1. Purpose
+## 目的
 
-Synchronize a single AD DS lab user to Microsoft Entra ID through Microsoft Entra Cloud Sync, while keeping the initial scope minimal and auditable.
+AD DSラボドメインからMicrosoft Entra IDへ、選定ユーザーのみをMicrosoft Entra Cloud Syncで同期します。
 
-## 2. Preconditions
+## 前提
 
-| Item | Value |
+| 項目 | 前提 |
 |---|---|
-| AD domain | `ad.contoso-lab.local` |
-| Agent server | `<CLOUD-SYNC-AGENT-SERVER>` |
-| Agent status | Active during validation |
+| AD DS | ラボドメイン構成済み |
+| Cloud Sync Agent | Active |
+| gMSA | Agent構成で利用 |
+| 同期対象 | Selected security group |
+| 初回同期 | 1 userのみ |
+
+## 事前確認
+
+1. AD DS上で同期対象グループが存在することを確認する。
+2. 同期対象ユーザーがグループの直接メンバーであることを確認する。
+3. Microsoft Entra ID側に同一UPNの既存クラウドユーザーがないことを確認する。
+4. Cloud Sync AgentがActiveであることを確認する。
+
+## Scope設定
+
+| 項目 | 設定 |
+|---|---|
+| Scope type | Selected security group |
 | Scope group | `GG-CloudSync-Users` |
-| Target user | `<SYNCED-USER>` |
-| Target UPN | `<SYNCED-USER-UPN>` |
-| Agent placement | DC co-location for lab cost only |
+| Nested group | 対象外。同期対象ユーザーは直接メンバーにする。 |
 
-## 3. AD-side validation
+Security Groupスコープは、パイロットや段階展開に向いた方式です。定常運用ではOU設計、グループ運用、変更管理、対象外条件を別途設計します。
 
-Run on the AD DS management host.
+## On-demand provisioning
 
-```powershell
-Import-Module ActiveDirectory
+On-demand provisioningは、選択した1ユーザーで同期構成を確認するために利用します。
 
-Get-ADUser <SYNCED-USER-SAM> -Properties UserPrincipalName,DistinguishedName,Enabled,MemberOf |
-  Select-Object Name,SamAccountName,UserPrincipalName,Enabled,DistinguishedName,MemberOf
+重要:
 
-Get-ADGroup GG-CloudSync-Users -Properties DistinguishedName,Members |
-  Select-Object Name,DistinguishedName,Members
-```
+- On-demand provisioningは単体検証として有効です。
+- ただし、選択ユーザーに対するscoping filtersの評価は通常同期と同じ証跡にはなりません。
+- 最終的なScope確認は、通常同期、Provisioning logs、Graph確認で補完します。
 
-Expected result:
+## 通常同期確認
 
-```text
-User is enabled.
-User is a direct member of GG-CloudSync-Users.
-User DistinguishedName matches the value used for on-demand provisioning.
-```
-
-## 4. Entra-side duplicate check
-
-Run from a management workstation with Azure CLI and Microsoft Graph access.
-
-```powershell
-$Upn = "<SYNCED-USER-UPN>"
-$Uri = "https://graph.microsoft.com/v1.0/users?`$filter=userPrincipalName eq '$Upn'&`$select=id,displayName,userPrincipalName,onPremisesSyncEnabled"
-az rest --method GET --url $Uri
-```
-
-Expected first-run result:
-
-```json
-{"value": []}
-```
-
-## 5. Cloud Sync configuration
-
-Portal path:
-
-```text
-Microsoft Entra admin center
-  > Microsoft Entra Connect
-    > Cloud sync
-      > Configurations
-        > New configuration
-```
-
-Configuration:
-
-| Item | Value |
+| 確認 | 期待値 |
 |---|---|
-| Direction | AD DS to Microsoft Entra ID |
-| Domain | `ad.contoso-lab.local` |
-| Password Hash Sync | Enabled |
-| Scope type | Selected security groups |
-| Scope group DN | `CN=GG-CloudSync-Users,OU=Groups,OU=Lab,DC=ad,DC=contoso-lab,DC=local` |
-| Attribute mapping | Default for initial validation |
+| Provisioning logs | 対象ユーザーのCreateまたはUpdate成功 |
+| Graph user property | `onPremisesSyncEnabled = true` |
+| Lab domain synced users | 1 |
+| onPremisesDomainName | ラボADドメイン |
 
-## 6. On-demand provisioning validation
+## 代表的なトラブルシュート
 
-Use the exact AD DistinguishedName of the target user.
+| 事象 | 原因 | 対応 |
+|---|---|---|
+| ドメインドロップダウンが空 | Portalセッション/Blade反映遅延 | サインアウト/再ログイン、Agent状態確認 |
+| On-demand importでResourceNotFound | 入力DNが実DNと異なる | ADからDistinguishedNameを再取得 |
+| 同期対象が増える | Scopeまたはグループメンバー誤り | Group membershipとGraph結果を確認 |
+| AgentがInactive | Agent server停止、サービス停止、通信障害 | VM/サービス/ネットワーク/Portal状態を確認 |
 
-```text
-<CORRECT-USER-DISTINGUISHED-NAME>
-```
+## 実務での注意
 
-Expected result:
-
-| Step | Expected result |
-|---|---|
-| Import user | Success |
-| Determine if user is in scope | Success |
-| Match user | Success |
-| Perform action | Create or Update Success |
-
-Note: On-demand provisioning is useful for validating a single user. It should not be treated as the only proof of the normal sync scope. Normal provisioning logs and Graph checks should also be captured.
-
-## 7. Normal sync verification
-
-After enabling the configuration and restarting sync, confirm the user through Graph.
-
-```powershell
-$Upn = "<SYNCED-USER-UPN>"
-$Uri = "https://graph.microsoft.com/v1.0/users?`$filter=userPrincipalName eq '$Upn'&`$select=displayName,userPrincipalName,onPremisesSyncEnabled,onPremisesDistinguishedName,onPremisesDomainName,onPremisesSamAccountName,onPremisesLastSyncDateTime"
-az rest --method GET --url $Uri
-```
-
-Expected result:
-
-```text
-onPremisesSyncEnabled: true
-onPremisesDomainName: ad.contoso-lab.local
-onPremisesSamAccountName: <SYNCED-USER-SAM>
-```
-
-## 8. Scope verification
-
-A clean public evidence summary should state:
-
-| Item | Expected public result |
-|---|---|
-| Lab domain synced user count | 1 |
-| Synced target user | `<SYNCED-USER-UPN>` |
-| Provisioning result | Success |
-
-## 9. Operational notes
-
-- Security group scoping is useful for pilot validation. Nested groups are not used in this lab.
-- Treat the Cloud Sync Agent server as a high-privilege identity infrastructure component.
-- Avoid applying interactive MFA/Conditional Access requirements to sync-related service identities without validating the impact.
-- In production, consider multiple agents, hardened hosts, least privilege, monitoring, alerting, and break-glass access.
+- Cloud Sync Agent serverはTier 0資産として扱います。
+- Directory Synchronization AccountsをConditional Accessで誤ってブロックしないようにします。
+- 複数Agent、監査ログ、同期失敗時のアラート、変更管理を設計します。
+- 実行結果にはUPNやIDが含まれるため、公開リポジトリには貼り付けません。

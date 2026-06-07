@@ -1,27 +1,27 @@
-# Architecture Overview
+# アーキテクチャ概要
 
-## Scope
+## スコープ
 
-This portfolio models a small-business Microsoft cloud and hybrid identity platform.
+このポートフォリオは、小規模企業向けのMicrosoftクラウド基盤と軽量なHybrid Identity構成を想定した個人ラボです。
 
-The validation scope covers:
+検証範囲は以下です。
 
-- Microsoft 365 / Microsoft Entra ID identity foundation
-- Conditional Access / MFA design
-- Intune device management and compliance
-- Azure Virtual Desktop with Microsoft Entra joined session host
-- AD DS / DNS lab domain
+- Microsoft 365 / Microsoft Entra IDのID基盤
+- Conditional Access / MFA設計
+- Microsoft Intuneによるデバイス管理と準拠確認
+- Microsoft Entra joined session hostを用いたAzure Virtual Desktop
+- Azure IaaS上のAD DS / DNSラボドメイン
 - Microsoft Entra Cloud Sync
-- Password Hash Sync sign-in validation
-- Lab VM cost-stop operation
+- Password Hash Syncのサインイン検証
+- 検証後のVM deallocateによるラボコスト停止
 
-## Logical architecture
+## 論理構成
 
 ```mermaid
 flowchart LR
-  subgraph UserLayer[Users]
-    U1[Cloud user]
-    U2[Synced AD user]
+  subgraph UserLayer[利用者]
+    U1[クラウドユーザー]
+    U2[AD同期ユーザー]
   end
 
   subgraph M365[Microsoft 365 / Microsoft Entra ID]
@@ -35,11 +35,11 @@ flowchart LR
     HP[Host Pool]
     WS[Workspace]
     DAG[Desktop Application Group]
-    SH[Session Host\nMicrosoft Entra joined]
+    SH[Session Host\nMicrosoft Entra joined\nIntune enrolled]
   end
 
-  subgraph Hybrid[Azure IaaS lab AD]
-    DC[AD DS / DNS VM\nNo public IP]
+  subgraph Hybrid[Azure IaaS ラボAD]
+    DC[AD DS / DNS VM\nPublic IPなし]
     Agent[Cloud Sync Agent]
     OU[OU / Groups / User]
   end
@@ -52,25 +52,28 @@ flowchart LR
   SH --> Entra
   Entra --> CA
   DC --> Agent
+  OU --> Agent
   Agent --> Entra
   Entra --> Logs
   U2 --> Entra
 ```
 
-## Main flows
+## 主なフロー
 
-| Flow | Description |
+| フロー | 説明 |
 |---|---|
-| AVD user access | User accesses AVD Workspace, DAG, and Microsoft Entra joined session host. |
-| Device management | AVD session host is enrolled into Intune and evaluated by compliance policy. |
-| Hybrid identity sync | AD DS user in the lab domain is synchronized to Microsoft Entra ID by Cloud Sync. |
-| Password authentication | AD password change is synchronized through Password Hash Sync and validated with cloud sign-in. |
-| Operations | VM state, AVD sessions, Cloud Sync health, and sign-in logs are checked through runbooks. |
+| AVD接続 | クラウドユーザーがWorkspace / DAG経由でMicrosoft Entra joined session hostへ接続します。 |
+| Intune管理 | Session HostはIntuneへ登録され、準拠状態を確認します。 |
+| Cloud Sync | AD DS上の選定ユーザーをCloud Sync Agent経由でMicrosoft Entra IDへ同期します。 |
+| PHS検証 | AD側パスワード再設定後、同期ユーザーでMicrosoftクラウドへサインインできることを確認します。 |
+| 運用証跡 | Portal、Provisioning logs、Sign-in logs、Graph、Runbook結果を非公開原本として保持し、公開版では要約のみ掲載します。 |
 
-## Design notes
+## 設計上の境界
 
-- The session host is Microsoft Entra joined. This reduces dependency on AD DS line-of-sight for the AVD session host scenario validated here.
-- AD DS is added for hybrid identity validation, not because the AVD session host requires AD domain join in this lab design.
-- Cloud Sync is scoped to a selected security group for pilot-style validation.
-- The Cloud Sync Agent is installed on the DC only for lab cost reduction. This is not presented as a production default.
-- Public repository evidence is summarized as Markdown. Raw screenshots and raw logs are not included.
+| 項目 | このラボでの扱い | 実務での追加検討 |
+|---|---|---|
+| AD DS | 単一DC | 複数DC、バックアップ、監視、復旧試験 |
+| Cloud Sync Agent | DC同居 | Tier 0資産としての保護、専用サーバー、複数Agent |
+| AVD | Microsoft Entra joined | SSO、FSLogix、プロファイル、監視、スケール計画 |
+| 監査 | 手動確認と要約 | Log Analytics、アラート、保持期間、定期レビュー |
+| IaC | この公開版では限定的 | Bicep/Terraform/GitHub Actionsによる再構築性 |

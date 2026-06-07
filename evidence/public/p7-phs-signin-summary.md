@@ -1,25 +1,33 @@
-# P7 Password Hash Sync Sign-in Evidence Summary
+# P7 Password Hash Syncサインイン証跡サマリー
 
-## Result
+## 結果
 
-Password Hash Sync sign-in validation succeeded.
+Password Hash Syncのサインイン検証は成功しました。
 
-## Public validation summary
+## 公開用検証結果
 
-| Item | Public result |
+| 項目 | 結果 |
 |---|---|
-| AD password reset | Success |
-| AD `PasswordLastSet` | Updated during validation |
-| Cloud Sync configuration | Healthy during validation |
-| Password Hash Sync | Enabled |
-| Cloud sign-in | Success |
+| AD password reset | 成功 |
+| AD `PasswordLastSet` | 検証時に更新確認 |
+| Cloud Sync configuration | 検証時に正常 |
+| Password Hash Sync | 有効 |
+| Cloud sign-in | 成功 |
 | Application | Microsoft profile/account experience |
 | Client app | Browser |
-| Status error code | 0 |
-| Failure reason | None / not applicable for the successful event |
-| Conditional Access | Not applied in the captured success event |
+| status/errorCode | 0 |
+| Failure reason | 成功イベントでは該当なし |
+| Conditional Access | 取得した成功イベントでは未適用 |
 
-## Notes
+## 判定
 
-- A separate Keep Me Signed In interruption event was observed before the successful sign-in event. It was not treated as a PHS failure.
-- Public evidence excludes sign-in log screenshots and raw CSV/JSON exports.
+status/errorCode = 0の成功イベントと、Microsoftクラウドへのサインイン成功をもって、PHS検証成功と判断しました。
+
+Keep Me Signed Inの割り込みイベントは別途記録されましたが、後続の成功イベントが確認できたため、PHS失敗とは扱っていません。
+
+## 非公開原本
+
+- Sign-in logsスクリーンショット
+- Sign-in logs CSV/JSON原本
+- IP、Request ID、Correlation ID、Session ID、UPNを含むログ
+- 検証用一時パスワード

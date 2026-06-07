@@ -1,21 +1,36 @@
+#requires -Version 5.1
+[CmdletBinding()]
 param(
   [Parameter(Mandatory = $true)]
+  [ValidateNotNullOrEmpty()]
   [string]$OnPremisesDomainName
 )
 
-$Token = az account get-access-token --resource "https://graph.microsoft.com/" --query accessToken -o tsv
-if (-not $Token) { throw "Microsoft Graph access token could not be acquired." }
+Set-StrictMode -Version Latest
+$ErrorActionPreference = 'Stop'
 
-$Headers = @{ Authorization = "Bearer $Token" }
-$Uri = "https://graph.microsoft.com/v1.0/users?`$select=displayName,userPrincipalName,onPremisesSyncEnabled,onPremisesDistinguishedName,onPremisesDomainName,onPremisesSamAccountName,onPremisesLastSyncDateTime&`$top=999"
+# This script uses az rest so that access tokens are not materialized into PowerShell variables.
+# Do not commit raw command output to the public repository.
+$Select = 'displayName,userPrincipalName,onPremisesSyncEnabled,onPremisesDistinguishedName,onPremisesDomainName,onPremisesSamAccountName,onPremisesLastSyncDateTime'
+$Uri = "https://graph.microsoft.com/v1.0/users?`$select=$Select&`$top=999"
 
 $AllUsers = @()
+
 do {
-  $Resp = Invoke-RestMethod -Method Get -Uri $Uri -Headers $Headers
+  $Resp = az rest --method GET --url $Uri | ConvertFrom-Json
   $AllUsers += @($Resp.value)
-  $Uri = $Resp.'@odata.nextLink'
+
+  if ($Resp.PSObject.Properties.Name -contains '@odata.nextLink') {
+    $Uri = $Resp.'@odata.nextLink'
+  }
+  else {
+    $Uri = $null
+  }
 } while ($Uri)
 
 $AllUsers |
-  Where-Object { $_.onPremisesSyncEnabled -eq $true -and $_.onPremisesDomainName -eq $OnPremisesDomainName } |
+  Where-Object {
+    $_.onPremisesSyncEnabled -eq $true -and
+    $_.onPremisesDomainName -eq $OnPremisesDomainName
+  } |
   Select-Object displayName,userPrincipalName,onPremisesDomainName,onPremisesSamAccountName,onPremisesLastSyncDateTime
