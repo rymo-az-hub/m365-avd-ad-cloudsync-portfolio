@@ -1,0 +1,37 @@
+flowchart LR
+  subgraph UserLayer[Users]
+    U1[Cloud user]
+    U2[Synced AD user]
+  end
+
+  subgraph M365[Microsoft 365 / Microsoft Entra ID]
+    Entra[Microsoft Entra ID]
+    CA[Conditional Access / MFA]
+    Intune[Microsoft Intune]
+    Logs[Sign-in logs / Audit logs]
+  end
+
+  subgraph AVD[Azure Virtual Desktop]
+    HP[Host Pool]
+    WS[Workspace]
+    DAG[Desktop Application Group]
+    SH[Session Host\nMicrosoft Entra joined]
+  end
+
+  subgraph Hybrid[Azure IaaS lab AD]
+    DC[AD DS / DNS VM\nNo public IP]
+    Agent[Cloud Sync Agent]
+    OU[OU / Groups / User]
+  end
+
+  U1 --> WS
+  WS --> DAG
+  DAG --> HP
+  HP --> SH
+  SH --> Intune
+  SH --> Entra
+  Entra --> CA
+  DC --> Agent
+  Agent --> Entra
+  Entra --> Logs
+  U2 --> Entra

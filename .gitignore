@@ -1,0 +1,45 @@
+# Private evidence and raw exports
+evidence/private/
+evidence/raw/
+evidence/_selected/
+private-evidence/
+raw-evidence/
+
+# Screenshots and images are excluded from this public repo
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.bmp
+*.gif
+
+# Raw logs / exports
+*.log
+*.har
+*signin*.csv
+*signIn*.csv
+*provisioning*.csv
+*graph*.json
+*raw*.json
+
+# Secrets / tokens
+*.env
+*.token
+*.secret
+*.key
+*.pem
+
+# Office binary deliverables are kept private in this repo version
+*.xlsx
+*.xlsm
+*.docx
+*.pptx
+~$*.xlsx
+~$*.docx
+~$*.pptx
+
+# Local temp
+*.tmp
+*.bak
+.DS_Store
+Thumbs.db
