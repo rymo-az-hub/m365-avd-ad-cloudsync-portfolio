@@ -21,7 +21,7 @@
 | T-HYB-06 | Graphで同期ユーザー確認 | 成功 | onPremisesSyncEnabled = trueを確認 |
 | T-PHS-01 | AD側パスワード再設定 | 成功 | PasswordLastSet更新を確認 |
 | T-PHS-02 | PHSサインイン確認 | 成功 | Microsoftクラウドへサインイン成功 |
-| T-PHS-03 | Sign-in logs確認 | 成功 | Sign-in logsのstatus/errorCode = 0を確認 |
+| T-PHS-03 | Sign-in logs確認 | 成功 | 最終的なサインイン成功イベントを主判定とし、status/errorCode = 0 と failureReason なしを補助指標として確認 |
 | T-OPS-01 | AVDセッション確認後のVM停止 | 成功 | ACTIVE_USER_SESSION_COUNT=0を確認後にdeallocate |
 
 ## 主なトラブルシュート
