@@ -158,7 +158,7 @@ flowchart LR
 | 中 | AD DSバックアップ/復旧試験 | ラボのCloud Sync確認から、実務の復旧設計へ広げるため |
 | 中 | WSUS / Azure Update Manager | Windows更新管理と運用設計のテーマへ拡張するため |
 
-## 面接で説明できるポイント
+## 設計・運用上の判断ポイント
 
 - なぜAVDをMicrosoft Entra joined構成にしたか。
 - なぜAD DSはAVD前提ではなく、Hybrid Identity検証のために追加したか。
@@ -168,6 +168,6 @@ flowchart LR
 - なぜスクリーンショット原本ではなく、公開用Markdown証跡に置換したか。
 - 実務なら追加する可用性、監視、復旧、Break-glass、IaC、監査設計は何か。
 
-## 実行スクリプトについて
+## スクリプトの位置づけ
 
 `scripts/`配下のPowerShellは、公開用に抽象化したサンプルです。実行結果にはUPN、Resource ID、同期属性、IPなどが含まれる場合があるため、**実行結果は公開リポジトリにコミットしない**前提です。
