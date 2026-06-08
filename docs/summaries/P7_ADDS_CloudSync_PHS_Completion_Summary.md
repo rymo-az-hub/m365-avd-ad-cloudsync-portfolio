@@ -22,7 +22,7 @@ AD DS / DNSラボドメインをAzure上に構築し、Microsoft Entra Cloud Syn
 | Password Hash Sync | 有効化・確認済み |
 | ADパスワード再設定 | 成功 |
 | Microsoftクラウドサインイン | 成功 |
-| Sign-in logs確認 | Sign-in logsのstatus/errorCode = 0を確認 |
+| Sign-in logs確認 | 最終的なサインイン成功イベントを確認し、補助指標として status/errorCode = 0、failureReason なしを確認 |
 | 検証後のVM deallocate | 完了 |
 
 ## Cloud Sync設計
@@ -43,7 +43,7 @@ AD DS / DNSラボドメインをAzure上に構築し、Microsoft Entra Cloud Syn
 |---|---|
 | On-demand provisioning | 単体ユーザー同期の動作確認として利用。これは単一ユーザー検証として扱い、通常同期Scopeの唯一の証跡にはしない。 |
 | Scope証跡 | 通常同期、Provisioning logs、Graph確認で補完。 |
-| PHS検証 | AD側でパスワードを再設定し、クラウド側サインイン成功とSign-in logsで確認。 |
+| PHS検証 | AD側でパスワードを再設定し、Microsoftクラウドへのサインイン成功イベントを確認。status/errorCode = 0 と failureReason なしは補助指標として扱う。 |
 | CA/MFA切り分け | PHS失敗とConditional Access/MFAの影響を混同しないよう、Sign-in logsで確認。 |
 
 ## 発生したトラブルと対応

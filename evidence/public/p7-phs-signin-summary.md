@@ -15,13 +15,13 @@ Password Hash Syncのサインイン検証は成功しました。
 | Cloud sign-in | 成功 |
 | Application | Microsoft profile/account experience |
 | Client app | Browser |
-| status/errorCode | 0 |
+| status/errorCode | 成功イベントの補助指標として0を確認 |
 | Failure reason | 成功イベントでは該当なし |
 | Conditional Access | 取得した成功イベントでは未適用 |
 
 ## 判定
 
-Sign-in logsのstatus/errorCode = 0の成功イベントと、Microsoftクラウドへのサインイン成功をもって、PHS検証成功と判断しました。
+Microsoftクラウドへのサインイン成功イベントを主判定とし、補助指標としてSign-in logsのstatus/errorCode = 0、failureReasonなしを確認したうえで、PHS検証成功と判断しました。
 
 Keep Me Signed Inの割り込みイベントは別途記録されましたが、後続の成功イベントが確認できたため、PHS失敗とは扱っていません。
 
