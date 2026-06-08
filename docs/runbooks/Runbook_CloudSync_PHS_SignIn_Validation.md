@@ -21,7 +21,7 @@ AD DS側でパスワードを再設定した同期ユーザーが、Microsoftク
 3. Cloud Sync / PHS状態が正常であることを確認する。
 4. 数分待ってからInPrivate / シークレットウィンドウでMicrosoftクラウドへサインインする。
 5. Sign-in logsで対象イベントを確認する。
-6. Sign-in logsのstatus/errorCode = 0 の成功イベントを確認する。
+6. 最終的なサインイン成功イベントを確認し、補助指標として status/errorCode = 0、failureReason なしを確認する。
 7. 検証後、一時パスワードを放置せず、必要に応じて再変更・無効化・削除する。
 
 ## 同期待ち時間の目安
@@ -44,13 +44,13 @@ PHSは一般に数分単位で反映されます。ユーザー/グループオ�
 | 結果 | 判定 |
 |---|---|
 | Microsoftクラウドへサインイン成功 | PHS検証成功 |
-| Sign-in logsのstatus/errorCode = 0 | Sign-in logs上の成功イベント |
+| Sign-in logsの成功イベント | 成功イベントそのものを主判定とし、status/errorCode = 0 と failureReason なしを補助指標として確認する。 |
 | MFA/CAで停止 | PHS失敗とは限らない。Sign-in logsで切り分ける。 |
 | パスワード不正 | PHS未反映、入力誤り、AD側設定不備を確認する。 |
 
 ## 50140等の割り込みイベント
 
-Keep Me Signed Inなどの割り込みイベントが記録される場合があります。この場合でも、後続でSign-in logsのstatus/errorCode = 0の成功イベントが確認できれば、PHS失敗とは扱いません。
+Keep Me Signed Inなどの割り込みイベントが記録される場合があります。この場合でも、後続でサインイン成功イベントが確認でき、補助指標として status/errorCode = 0 と failureReason なしを確認できれば、PHS失敗とは扱いません。
 
 ## セキュリティ注意
 
