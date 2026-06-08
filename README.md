@@ -153,7 +153,6 @@ flowchart LR
 | 優先度 | 拡張候補 | 理由 |
 |---:|---|---|
 | 高 | Log Analytics / Alert / Workbook | CloudOpsとして監視、検知、運用レビューまで説明できるようにするため |
-| 高 | GitHub Actionsによる公開前チェック | 公開統制と再混入防止を自動化し、Platform Engineering寄りの再現性を示すため |
 | 中 | Bicep / Azure CLIによる再構築自動化 | 構築手順の再現性を上げ、IaC寄りの説明力を補強するため |
 | 中 | AD DSバックアップ/復旧試験 | ラボのCloud Sync確認から、実務の復旧設計へ広げるため |
 | 中 | WSUS / Azure Update Manager | Windows更新管理と運用設計のテーマへ拡張するため |
