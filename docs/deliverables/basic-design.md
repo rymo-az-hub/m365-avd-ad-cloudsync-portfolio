@@ -21,7 +21,7 @@
 | Classic full Connect SyncではなくCloud Syncを使う | 小規模・選定ユーザー同期の検証に適した軽量構成を示すため。 |
 | 初回同期はSelected security groupで最小化する | 同期対象を1ユーザーに絞り、証跡と切り分けを明確にするため。 |
 | 初回のAttribute mappingは既定値を使う | 初期同期時のトラブルシュート要素を減らすため。 |
-| On-demand provisioningだけで完了扱いにしない | On-demandは単体検証であり、通常同期ログとGraph結果で補完する必要があるため。 |
+| On-demand provisioningだけで完了扱いにしない | On-demandは単体検証機能であり、実務上の証跡設計として通常同期ログとGraph結果で補完する必要があるため。 |
 | 公開証跡はMarkdown要約にする | GitHub公開時の情報漏えいリスクを下げるため。 |
 
 ## AVD設計メモ
@@ -30,8 +30,10 @@
 |---|---|
 | Join方式 | Microsoft Entra joined |
 | 管理 | Microsoft Intune enrollment / compliance validation |
+| Session Host OS | Windows 11系のAVD Session Hostを想定。公開版では具体バージョンや端末名は抽象化する。 |
 | Session type | ラボ検証用の単一Session Host。実務ではsingle-session / multi-session、OS edition、FSLogix要件を別途設計する。 |
-| Start VM on Connect | 有効化・検証済み。実務ではAzure Virtual Desktop service principalへのDesktop Virtualization Power On Contributor割り当てなどRBAC前提を明記する。 |
+| Intune enrollment | Microsoft Entra joined session hostをIntune登録し、準拠状態を確認する。 |
+| Start VM on Connect | 有効化・検証済み。実務ではAzure Virtual Desktop service principalへの`Desktop Virtualization Power On Contributor`のsubscription scope割り当てなどRBAC前提を明記する。 |
 
 ## 実務との差分
 

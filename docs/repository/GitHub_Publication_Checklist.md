@@ -27,7 +27,7 @@ origin が想定GitHubリポジトリを指している
 ## 2. 公開対象外ファイルの検出
 
 ```powershell
-$BlockedExtensions = @('*.png','*.jpg','*.jpeg','*.webp','*.bmp','*.gif','*.csv','*.json','*.xlsx','*.xlsm','*.docx','*.pptx','*.log','*.har','*.evtx','*.etl')
+$BlockedExtensions = @('*.png','*.jpg','*.jpeg','*.webp','*.bmp','*.gif','*.csv','*.json','*.xlsx','*.xlsm','*.docx','*.pptx','*.log','*.har','*.evtx','*.etl','*.zip','*.7z','*.rar','*.tar','*.tgz','*.clixml','*.xml','*.html','*.ndjson')
 Get-ChildItem -Recurse -File -Include $BlockedExtensions
 ```
 
@@ -40,7 +40,7 @@ Get-ChildItem -Recurse -File -Include $BlockedExtensions
 Git管理対象だけを確認する場合:
 
 ```powershell
-git ls-files | Select-String -Pattern '\.(png|jpg|jpeg|webp|bmp|gif|csv|json|xlsx|xlsm|docx|pptx|log|har|evtx|etl)$'
+git ls-files | Select-String -Pattern '\.(png|jpg|jpeg|webp|bmp|gif|csv|json|xlsx|xlsm|docx|pptx|log|har|evtx|etl|zip|7z|rar|tar|tgz|clixml|xml|html|ndjson)$'
 ```
 
 期待値:
@@ -91,7 +91,7 @@ $RegexPatterns = @(
   @{ Name = 'SID'; Pattern = 'S-\d-\d+-(\d+-){1,14}\d+' },
   @{ Name = 'IPv4'; Pattern = '\b(?:\d{1,3}\.){3}\d{1,3}\b' },
   @{ Name = 'EmailOrUPN'; Pattern = '\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b' },
-  @{ Name = 'BearerToken'; Pattern = 'Bearer\s+[A-Za-z0-9._\-]+=*' },
+  @{ Name = 'BearerToken'; Pattern = 'Bearer\s+[A-Za-z0-9._\-]{20,}=*' },
   @{ Name = 'SecretKeyword'; Pattern = '(?i)(password|secret|client_secret|access_token|refresh_token|bearer)' }
 )
 
@@ -108,7 +108,17 @@ foreach ($Entry in $RegexPatterns) {
 - 検出結果は機械的に削除せず、値そのものか、方針説明かを人間が判定します。
 - 実値らしきものが1件でも出た場合は、push前に修正します。
 
-## 5. README表示確認
+## 5. GitHub Actionsによる自動チェック
+
+本リポジトリでは、`.github/workflows/publication-check.yml`により、以下をpush / pull request時に自動確認します。
+
+- `git diff --check`相当のwhitespace確認
+- スクリーンショット、CSV/JSON、Office、ログ、アーカイブ等の禁止拡張子確認
+- GUID、SID、IPv4、Email/UPN、Bearer token形式の高確度パターン確認
+
+ローカルチェックとCIの両方を通すことで、手作業更新時の再混入を防ぎます。
+
+## 6. README表示確認
 
 GitHub上で以下を確認します。
 
@@ -120,7 +130,7 @@ GitHub上で以下を確認します。
 | 言語 | 日本語ファースト。製品名・コマンド・ファイル名のみ英語中心 |
 | Evidence | Markdown要約のみ。スクショや生ログなし |
 
-## 6. 最終判定
+## 7. 最終判定
 
 | 判定 | 条件 |
 |---|---|

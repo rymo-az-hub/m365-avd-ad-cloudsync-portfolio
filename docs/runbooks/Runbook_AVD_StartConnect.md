@@ -16,7 +16,7 @@ Azure Virtual DesktopのSession Hostが利用可能であり、ユーザーがWo
 
 ## Start VM on Connectの注意
 
-Start VM on Connectを実務で利用する場合、Azure Virtual Desktop service principalに対して、適切なスコープでDesktop Virtualization Power On Contributor相当の権限を付与する必要があります。ラボでは動作確認済みですが、実務ではRBACスコープ、変更管理、監査証跡を設計に含めます。
+Start VM on Connectを実務で利用する場合、Azure Virtual Desktop service principalに対して、`Desktop Virtualization Power On Contributor`相当の権限を**subscription scope**で付与する必要があります。ラボでは動作確認済みですが、実務ではRBACスコープ、変更管理、監査証跡を設計に含めます。
 
 ## 確認手順
 

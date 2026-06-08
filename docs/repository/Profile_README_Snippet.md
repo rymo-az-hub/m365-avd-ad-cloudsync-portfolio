@@ -1,7 +1,7 @@
 # GitHub Profile README用スニペット
 
 ```markdown
-## Azure / Microsoft Cloud Portfolio
+## Azure / Microsoft Cloud ポートフォリオ
 
 Azure / Microsoftクラウド基盤に関する個人検証ポートフォリオです。
 

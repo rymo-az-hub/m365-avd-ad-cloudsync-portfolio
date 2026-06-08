@@ -64,6 +64,20 @@ evidence/**/*.txt
 ~$*.docx
 ~$*.pptx
 
+
+# Archives and serialized exports must not be committed.
+*.zip
+*.7z
+*.rar
+*.tar
+*.tar.gz
+*.tgz
+*.clixml
+*.xml
+*.html
+*.htm
+*.ndjson
+
 # Local temp / OS files
 *.tmp
 *.bak

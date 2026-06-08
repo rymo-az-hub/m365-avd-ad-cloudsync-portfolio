@@ -1,6 +1,6 @@
 # Microsoft 365 / Entra ID / Intune / AVD / AD DS / Cloud Sync ラボポートフォリオ
 
-## TL;DR
+## 要約
 
 小規模企業向けの Microsoft 365 / Microsoft Entra ID / Microsoft Intune / Azure Virtual Desktop / AD DS / Microsoft Entra Cloud Sync 基盤を想定し、**要件整理、設計、構築、検証、Runbook化、公開用マスキング**までを個人ラボで再現したポートフォリオです。
 
@@ -14,6 +14,13 @@
 
 > このリポジトリは実案件の成果物ではありません。GitHub公開版では、スクリーンショット原本、CSV/JSON原本、Officeバイナリ、Tenant ID、Subscription ID、Object ID、Request ID、Correlation ID、SID、IPアドレス、UPN、トークン類を含めていません。
 
+## 想定シナリオと前提
+
+- 想定顧客は、Microsoft 365 Business Premiumを中心にID、端末管理、仮想デスクトップ、最小限のハイブリッドIDを整えたい小規模企業です。
+- Business Premiumを前提にした理由は、Microsoft Entra ID、Conditional Access、Microsoft Intune、Microsoft Defender系機能を中小規模でも扱いやすい単位で説明できるためです。
+- 本リポジトリは、実案件の本番構成ではなく、設計意図・検証観点・運用Runbookを説明する個人ラボです。
+- 可用性、監視自動化、IaCによる完全再現、バックアップ/復旧試験は、実務拡張時の追加設計領域として扱います。
+
 ## 関連ポートフォリオ
 
 | テーマ | リポジトリ | 主な観点 |
@@ -25,12 +32,12 @@
 
 | 順番 | ファイル | 用途 |
 |---:|---|---|
-| 1 | [Architecture](docs/architecture/architecture.md) | 全体構成と責任範囲の把握 |
-| 2 | [P6 AVD Summary](docs/summaries/P6_AVD_Completion_Summary.md) | AVD / Intune / Start VM on Connect検証の要約 |
-| 3 | [P7 Cloud Sync / PHS Summary](docs/summaries/P7_ADDS_CloudSync_PHS_Completion_Summary.md) | AD DS / Cloud Sync / PHS / Sign-in logs検証の要約 |
-| 4 | [Security Design Notes](docs/security/Security_Design_Notes.md) | セキュリティ・運用設計上の注意点 |
-| 5 | [Runbooks](docs/runbooks/README.md) | 運用手順と切り分け観点 |
-| 6 | [Public Evidence Summaries](evidence/public/README.md) | 公開用に抽象化した検証証跡 |
+| 1 | [アーキテクチャ](docs/architecture/architecture.md) | 全体構成と責任範囲の把握 |
+| 2 | [P6 AVD完了サマリー](docs/summaries/P6_AVD_Completion_Summary.md) | AVD / Intune / Start VM on Connect検証の要約 |
+| 3 | [P7 Cloud Sync / PHS完了サマリー](docs/summaries/P7_ADDS_CloudSync_PHS_Completion_Summary.md) | AD DS / Cloud Sync / PHS / Sign-in logs検証の要約 |
+| 4 | [セキュリティ設計メモ](docs/security/Security_Design_Notes.md) | セキュリティ・運用設計上の注意点 |
+| 5 | [Runbook一覧](docs/runbooks/README.md) | 運用手順と切り分け観点 |
+| 6 | [公開用証跡サマリー](evidence/public/README.md) | 公開用に抽象化した検証証跡 |
 
 ## 構成図
 
@@ -137,9 +144,19 @@ flowchart LR
 | AD DS | 単一DC | 複数DC、バックアップ、監視、復旧試験、パッチ設計が必要 |
 | 同期スコープ | Selected security groupで最小同期 | パイロットには有効。本番運用ではOU設計、グループ設計、変更管理を明確化 |
 | VNet DNS | 本検証では広範囲に変更しない | AD DS名前解決やドメイン参加が必要なワークロードではCustom DNS設計が必要 |
-| Start VM on Connect | ラボで有効化・検証 | Azure Virtual Desktop service principalへの適切なRBAC割り当てを設計に含める |
+| Start VM on Connect | ラボで有効化・検証 | Azure Virtual Desktop service principalへ`Desktop Virtualization Power On Contributor`を**subscription scope**で割り当てる前提を設計に含める |
 | 監視 | Portal / Graph / Sign-in logsの手動確認 | Log Analytics、アラート、監査ログ保持、定期レビューを設計 |
 | VM停止 | ラボのコスト停止としてdeallocate | 本番DCでは影響評価、復旧計画、メンテナンス手順なしに適用しない |
+
+## 今後の拡張候補
+
+| 優先度 | 拡張候補 | 理由 |
+|---:|---|---|
+| 高 | Log Analytics / Alert / Workbook | CloudOpsとして監視、検知、運用レビューまで説明できるようにするため |
+| 高 | GitHub Actionsによる公開前チェック | 公開統制と再混入防止を自動化し、Platform Engineering寄りの再現性を示すため |
+| 中 | Bicep / Azure CLIによる再構築自動化 | 構築手順の再現性を上げ、IaC寄りの説明力を補強するため |
+| 中 | AD DSバックアップ/復旧試験 | ラボのCloud Sync確認から、実務の復旧設計へ広げるため |
+| 中 | WSUS / Azure Update Manager | Windows更新管理と運用設計のテーマへ拡張するため |
 
 ## 面接で説明できるポイント
 
