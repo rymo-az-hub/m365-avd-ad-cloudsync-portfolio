@@ -33,7 +33,7 @@ Azure Virtual DesktopのModern構成を検証し、Microsoft Entra joined sessio
 | 領域 | ラボ | 実務での考慮 |
 |---|---|---|
 | Session Host | 単一ホスト中心 | 複数Session Host、スケーリング、可用性、監視を設計する。 |
-| Start VM on Connect | 有効化・動作確認 | Azure Virtual Desktop service principalへのDesktop Virtualization Power On Contributor割り当てなどRBAC前提を明記する。 |
+| Start VM on Connect | 有効化・動作確認 | Azure Virtual Desktop service principalへの`Desktop Virtualization Power On Contributor`のsubscription scope割り当てなどRBAC前提を明記する。 |
 | Profile | この公開版では対象外 | FSLogix、ストレージ、バックアップ、容量管理が必要。 |
 | Monitoring | 手動確認 | Log Analytics、アラート、診断設定を設計する。 |
 

@@ -20,7 +20,7 @@ AD DSラボドメイン上の選定ユーザーを、Microsoft Entra Cloud Sync�
 | Synced target | `<SYNCED_USER_UPN>` |
 | `onPremisesSyncEnabled` | `true` |
 
-## Scope証跡の考え方
+## スコープ証跡の考え方
 
 On-demand provisioningは、選択した1ユーザーで同期構成を確認するために利用しました。ただし、On-demand provisioningは通常同期Scopeの唯一の証跡としては扱っていません。
 

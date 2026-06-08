@@ -13,6 +13,7 @@
 | REQ-END-01 | Windows端末をIntuneで管理し、準拠状態を確認する | AVD Session Hostで確認済み |
 | REQ-AVD-01 | AVD Workspace / Desktop accessを提供する | ユーザー接続確認済み |
 | REQ-AVD-02 | AVD compute costを抑制する | Start VM on Connectとdeallocate運用を検証済み |
+| REQ-AVD-03 | Session HostのOS、session type、Intune登録前提を整理する | 基本設計に記載 |
 | REQ-HYB-01 | AD DS / DNSラボドメインを構築する | 完了 |
 | REQ-HYB-02 | 選定ADユーザーをEntra IDへ同期する | Cloud Syncで完了 |
 | REQ-HYB-03 | Password Hash Syncによるクラウドサインインを確認する | ADパスワード再設定後のサインインで確認済み |

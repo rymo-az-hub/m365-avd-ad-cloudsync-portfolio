@@ -21,7 +21,7 @@ Password Hash Syncのサインイン検証は成功しました。
 
 ## 判定
 
-status/errorCode = 0の成功イベントと、Microsoftクラウドへのサインイン成功をもって、PHS検証成功と判断しました。
+Sign-in logsのstatus/errorCode = 0の成功イベントと、Microsoftクラウドへのサインイン成功をもって、PHS検証成功と判断しました。
 
 Keep Me Signed Inの割り込みイベントは別途記録されましたが、後続の成功イベントが確認できたため、PHS失敗とは扱っていません。
 

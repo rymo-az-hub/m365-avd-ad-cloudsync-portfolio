@@ -21,23 +21,23 @@ AD DSラボドメインからMicrosoft Entra IDへ、選定ユーザーのみを
 3. Microsoft Entra ID側に同一UPNの既存クラウドユーザーがないことを確認する。
 4. Cloud Sync AgentがActiveであることを確認する。
 
-## Scope設定
+## スコープ設定
 
 | 項目 | 設定 |
 |---|---|
 | Scope type | Selected security group |
 | Scope group | `GG-CloudSync-Users` |
-| Nested group | 対象外。同期対象ユーザーは直接メンバーにする。 |
+| Selected security groups | direct members onlyを前提とし、同期対象ユーザーは直接メンバーにする。 |
 
 Security Groupスコープは、パイロットや段階展開に向いた方式です。定常運用ではOU設計、グループ運用、変更管理、対象外条件を別途設計します。
 
-## On-demand provisioning
+## On-demand provisioningの位置づけ
 
-On-demand provisioningは、選択した1ユーザーで同期構成を確認するために利用します。
+On-demand provisioningは、選択した1ユーザーまたは1グループで同期構成を検証するために利用します。これは単体検証機能であり、通常同期全体の代替証跡ではありません。
 
 重要:
 
-- On-demand provisioningは単体検証として有効です。
+- On-demand provisioningは単体検証として有効です。一方で、実務上の証跡設計では、通常同期のProvisioning logsとGraph確認でsteady-stateを補完します。
 - ただし、選択ユーザーに対するscoping filtersの評価は通常同期と同じ証跡にはなりません。
 - 最終的なScope確認は、通常同期、Provisioning logs、Graph確認で補完します。
 
